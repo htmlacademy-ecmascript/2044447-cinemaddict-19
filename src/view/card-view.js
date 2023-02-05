@@ -75,10 +75,13 @@ export default class CardView extends AbstractView {
   #handleOpenClick = null;
   #handleControlsClick = null;
   #currentFilterType = null;
+  #commentId = null;
 
-  constructor({film, onOpenClick, onControlsClick, currentFilterType}) {
+  constructor({film, commentId, onOpenClick, onControlsClick, currentFilterType}) {
     super();
     this.#film = film;
+    this.#commentId = commentId;
+
 
     this.#handleOpenClick = onOpenClick;
     this.#handleControlsClick = onControlsClick;

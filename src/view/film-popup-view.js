@@ -1,6 +1,6 @@
 import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { getTimeFromMins, humanizeReleaseDate, isCtrlEnterEvent } from '../utils/utils.js';
+import { getTimeFromMins, humanizeReleaseDate} from '../utils/utils.js';
 import { EMOJI, UpdateType, FilterType, SHAKE_ANIMATION_TIMEOUT, SHAKE_CLASS_NAME, } from '../const.js';
 
 const ClassName = {
@@ -214,7 +214,6 @@ export default class FilmPopupView extends AbstractStatefulView {
   #handleCloseClick = null;
   #handleControlsClick = null;
   #handleDeleteClick = null;
-  #handleAddComment = null;
   #currentFilterType = null;
 
   constructor({
@@ -224,7 +223,6 @@ export default class FilmPopupView extends AbstractStatefulView {
     onControlsClick,
     currentFilterType,
     onDeleteClick,
-    onAddComment,
   }) {
     super();
     this.#film = film;
@@ -242,7 +240,6 @@ export default class FilmPopupView extends AbstractStatefulView {
     this.#handleCloseClick = onCloseClick;
     this.#handleControlsClick = onControlsClick;
     this.#handleDeleteClick = onDeleteClick;
-    this.#handleAddComment = onAddComment;
 
     this._restoreHandlers();
   }
@@ -269,6 +266,13 @@ export default class FilmPopupView extends AbstractStatefulView {
     const scrollPosition = this.scrollPosition;
     super.updateElement(update);
     this.scrollPopup(scrollPosition);
+  }
+
+  getFormData() {
+    return {
+      comment: this._state.comment,
+      emotion: this._state.emotion,
+    };
   }
 
   #controlsClickHandler = (evt) => {
@@ -321,7 +325,6 @@ export default class FilmPopupView extends AbstractStatefulView {
     this.element.querySelectorAll('.film-details__comment-delete')
       .forEach((el) => el.addEventListener('click', this.#commentDeleteClickHandler));
 
-    document.addEventListener('keydown', this.#commentAddHandler);
   };
 
   _restoreHandlers() {
@@ -354,21 +357,6 @@ export default class FilmPopupView extends AbstractStatefulView {
     });
   };
 
-  #commentAddHandler = (evt) => {
-    if (isCtrlEnterEvent(evt)) {
-      evt.preventDefault();
-      const comment = this._state.comment;
-      const emotion = this._state.emotion;
-
-      const userComment = {
-        comment,
-        emotion,
-      };
-
-      this.#handleAddComment({comment: userComment, film: this.#film, scroll: this.scrollPosition});
-      document.removeEventListener('keydown', this.#commentAddHandler);
-    }
-  };
 
   #commentDeleteClickHandler = (evt) =>{
     evt.preventDefault();
