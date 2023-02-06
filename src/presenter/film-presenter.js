@@ -22,7 +22,13 @@ export default class FilmPresenter {
   #commentsModel = null;
   #mode = Mode.DEFAULT;
 
-  constructor({filmListContainer, onDataChange, onModeChange, currentFilterType, commentsModel}) {
+  constructor({
+    filmListContainer,
+    onDataChange,
+    onModeChange,
+    currentFilterType,
+    commentsModel,
+  }) {
     this.#filmListContainer = filmListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
@@ -56,7 +62,6 @@ export default class FilmPresenter {
         comments: this.#commentsModel.comments,
         onCloseClick: () => this.#closePopupClickHandler(film),
         onControlsClick: this.#handleControlsClick,
-        currentFilterType: this.#currentFilterType,
         onDeleteClick: this.#handleDeleteClick,
       });
 
@@ -113,7 +118,7 @@ export default class FilmPresenter {
       });
     };
 
-    switch(action) {
+    switch (action) {
       case UserAction.UPDATE_FILM:
         this.#filmPopup.setElementAnimation(action, resetFormState);
         break;
@@ -128,15 +133,15 @@ export default class FilmPresenter {
     }
   }
 
-  #handleControlsClick = (updatedDetails, updateType = UpdateType.PATCH, scrollPosition = 0) => {
-    this.#handleDataChange(
-      UserAction.UPDATE_FILM,
-      updateType,
-      {
-        film: {...this.#film, userDetails: updatedDetails},
-        scroll: scrollPosition
-      },
-    );
+  #handleControlsClick = (
+    updatedDetails,
+    updateType = UpdateType.PATCH,
+    scrollPosition = 0
+  ) => {
+    this.#handleDataChange(UserAction.UPDATE_FILM, updateType, {
+      film: { ...this.#film, userDetails: updatedDetails },
+      scroll: scrollPosition,
+    });
   };
 
   async #openPopupClickHandler(film) {
@@ -146,12 +151,10 @@ export default class FilmPresenter {
       comments: this.#commentsModel.comments,
       onCloseClick: () => this.#closePopupClickHandler(film),
       onControlsClick: this.#handleControlsClick,
-      currentFilterType: this.#currentFilterType,
       onDeleteClick: this.#handleDeleteClick,
     });
     this.#appendPopup();
   }
-
 
   #appendPopup() {
     this.#handleModeChange();
@@ -177,11 +180,11 @@ export default class FilmPresenter {
   #commentAddHandler = (evt) => {
     if (isCtrlEnterEvent(evt)) {
       evt.preventDefault();
-      this.#handleDataChange(
-        UserAction.ADD_COMMENT,
-        UpdateType.PATCH,
-        {comment: this.#filmPopup.getFormData(), film: this.#film, scroll: this.#filmPopup.scrollPosition}
-      );
+      this.#handleDataChange(UserAction.ADD_COMMENT, UpdateType.PATCH, {
+        comment: this.#filmPopup.getFormData(),
+        film: this.#film,
+        scroll: this.#filmPopup.scrollPosition,
+      });
     }
   };
 
@@ -193,10 +196,6 @@ export default class FilmPresenter {
   };
 
   #handleDeleteClick = (id) => {
-    this.#handleDataChange(
-      UserAction.DELETE_COMMENT,
-      UpdateType.PATCH,
-      id,
-    );
+    this.#handleDataChange(UserAction.DELETE_COMMENT, UpdateType.PATCH, id);
   };
 }

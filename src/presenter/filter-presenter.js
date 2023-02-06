@@ -1,7 +1,12 @@
-import {filter} from '../utils/filter.js';
+import { filter } from '../utils/filter.js';
 import FiltersView from '../view/filters-view.js';
-import {FilterType, UpdateType} from '../const.js';
-import {render, replace, remove, RenderPosition} from '../framework/render.js';
+import { FilterType, UpdateType } from '../const.js';
+import {
+  render,
+  replace,
+  remove,
+  RenderPosition,
+} from '../framework/render.js';
 
 export default class FilterPresenter {
   #filterContainer = null;
@@ -10,7 +15,7 @@ export default class FilterPresenter {
 
   #filterComponent = null;
 
-  constructor({filterContainer, filterModel, filmsModel}) {
+  constructor({ filterContainer, filterModel, filmsModel }) {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#filmsModel = filmsModel;
@@ -29,7 +34,7 @@ export default class FilterPresenter {
       },
       {
         type: FilterType.WATCHLIST,
-        name: 'Wathlist',
+        name: 'Watchlist',
         count: filter[FilterType.WATCHLIST](films).length,
       },
       {
@@ -52,11 +57,15 @@ export default class FilterPresenter {
     this.#filterComponent = new FiltersView({
       filters,
       currentFilterType: this.#filterModel.filter,
-      onFilterTypeChange: this.#handleFilterTypeChange
+      onFilterTypeChange: this.#handleFilterTypeChange,
     });
 
     if (prevFilterComponent === null) {
-      render(this.#filterComponent, this.#filterContainer, RenderPosition.BEFOREBEGIN);
+      render(
+        this.#filterComponent,
+        this.#filterContainer,
+        RenderPosition.BEFOREBEGIN
+      );
       return;
     }
 
