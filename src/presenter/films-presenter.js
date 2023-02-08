@@ -15,6 +15,7 @@ import NoFilmsErrorView from '../view/no-films-error-view.js';
 import { render, RenderPosition, remove } from '../framework/render.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import { FILM_COUNT_PER_STEP, SortType, TimeLimit, UpdateType, UserAction } from '../const.js';
+import PopupPresenter from './popup-presenter';
 
 export default class FilmsPresenter {
   #filmsContainer = null;
@@ -24,6 +25,7 @@ export default class FilmsPresenter {
   #commentsModel = null;
   #filterModel = null;
   #filmPresenter = new Map();
+  #popupPresenter = null;
 
   #renderedFilmCount = FILM_COUNT_PER_STEP;
   #loadingComponent = new LoadingView();
@@ -81,6 +83,12 @@ export default class FilmsPresenter {
     render(new HiddenTitleView(), this.#filmList.element);
     render(this.#filmListContainer, this.#filmList.element);
     this.#renderFilmList();
+    this.#popupPresenter = new PopupPresenter({
+      filmsModel: this.#filmsModel,
+      commentsModel: this.#commentsModel,
+      filterModel: this.#filterModel,
+      onDataChange: this.#handleViewAction
+    });
   }
 
   #renderLoading() {
@@ -101,7 +109,6 @@ export default class FilmsPresenter {
   }
 
   #handleSortTypeChange = (sortType) => {
-
     if (this.#currentSortType === sortType) {
       return;
     }
@@ -120,8 +127,8 @@ export default class FilmsPresenter {
     render(this.#sortComponent, this.#filmsContainer, RenderPosition.AFTERBEGIN);
   }
 
-  #handleModeChange = () => {
-    this.#filmPresenter.forEach((presenter) => presenter.resetView());
+  #handleOpenPopup = (film) => {
+    this.#popupPresenter.init(film);
   };
 
   #handleViewAction = async (actionType, updateType, update) => {
@@ -129,28 +136,32 @@ export default class FilmsPresenter {
 
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-
-        this.#filmPresenter.get(update.film.id).setSaving();
+        this.#filmPresenter.get(update.film.id);
+        this.#popupPresenter?.setSaving();
         try {
           await this.#filmsModel.updateFilm(updateType, update);
         } catch(err) {
-          this.#filmPresenter.get(update.film.id).setAborting(UserAction.UPDATE_FILM);
+          if(this.#popupPresenter.isOpen === true) {
+            this.#popupPresenter.setAborting(UserAction.UPDATE_FILM);
+          } else {
+            this.#filmPresenter.get(update.film.id).setAborting();
+          }
         }
         break;
       case UserAction.ADD_COMMENT:
-        this.#filmPresenter.get(update.film.id).setSaving();
+        this.#popupPresenter.setSaving();
         try {
           await this.#commentsModel.addComment(updateType, update);
         } catch(err) {
-          this.#filmPresenter.get(update.film.id).setAborting(UserAction.ADD_COMMENT);
+          this.#popupPresenter.setAborting(UserAction.ADD_COMMENT);
         }
         break;
       case UserAction.DELETE_COMMENT:
-        this.#filmPresenter.get(update.film.id).setDeleting(update.id);
+        this.#popupPresenter.setDeleting(update.id);
         try {
           await this.#commentsModel.deleteComment(updateType, update);
         } catch(err) {
-          this.#filmPresenter.get(update.film.id).setAborting(UserAction.DELETE_COMMENT, update.id);
+          this.#popupPresenter.setAborting(UserAction.DELETE_COMMENT, update.id);
         }
         break;
       default:
@@ -163,7 +174,7 @@ export default class FilmsPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#filmPresenter.get(data.film.id).init(data.film, data?.scroll);
+        this.#filmPresenter.get(data.film.id).init(data.film);
         break;
       case UpdateType.MINOR:
         this.#clearFilms();
@@ -204,9 +215,9 @@ export default class FilmsPresenter {
     const filmPresenter = new FilmPresenter({
       filmListContainer: this.#filmListContainer.element,
       onDataChange: this.#handleViewAction,
-      onModeChange: this.#handleModeChange,
       currentFilterType: this.#filterModel.filter,
-      commentsModel: this.#commentsModel
+      commentsModel: this.#commentsModel,
+      onOpenPopup: this.#handleOpenPopup
     });
 
     filmPresenter.init(film);
@@ -257,7 +268,8 @@ export default class FilmsPresenter {
     if (resetRenderedFilmCount) {
       this.#renderedFilmCount = FILM_COUNT_PER_STEP;
     } else {
-      this.#renderedFilmCount = Math.min(filmCount, this.#renderedFilmCount);
+      const computedRenderedFilmCount = Math.min(Math.min(filmCount, this.#renderedFilmCount), FILM_COUNT_PER_STEP);
+      this.#renderedFilmCount = computedRenderedFilmCount < FILM_COUNT_PER_STEP ? FILM_COUNT_PER_STEP : computedRenderedFilmCount;
     }
 
     if (resetSortType) {

@@ -3,7 +3,6 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getTimeFromMins, humanizeReleaseDate } from '../utils/utils.js';
 import {
   EMOJI,
-  UpdateType,
   FilterType,
   SHAKE_ANIMATION_TIMEOUT,
   SHAKE_CLASS_NAME,
@@ -22,35 +21,25 @@ const createCommentTemplate = (comments, isDeleting, isDisabled, deletingId) =>
       (comment) => `
   <li class="film-details__comment" data-id-deleting="${he.encode(comment.id)}">
     <span class="film-details__comment-emoji">
-      <img src="./images/emoji/${he.encode(
-    comment.emotion
-  )}.png" width="55" height="55" alt="emoji-smile">
+      <img src="./images/emoji/${he.encode(comment.emotion)}.png" width="55" height="55" alt="emoji-smile">
     </span>
     <div>
       <p class="film-details__comment-text">${he.encode(comment.comment)}</p>
       <p class="film-details__comment-info">
-        <span class="film-details__comment-author">${he.encode(
-    comment.author
-  )}</span>
-        <span class="film-details__comment-day">${he.encode(
-    humanizeReleaseDate(comment.date)
-  )}</span>
-        <button class="film-details__comment-delete" data-id="${he.encode(
-    comment.id
-  )}" ${isDisabled ? 'disabled' : ''}>
+        <span class="film-details__comment-author">${he.encode(comment.author)}</span>
+        <span class="film-details__comment-day">${he.encode(humanizeReleaseDate(comment.date))}</span>
+        <button class="film-details__comment-delete" data-id="${he.encode(comment.id)}" ${isDisabled ? 'disabled' : ''}>
         ${isDeleting && deletingId === comment.id ? 'Deleting...' : 'Delete'}
         </button>
       </p>
     </div>
   </li>
 `
-    )
-    .join('');
+    ).join('');
 
 const createNewCommentTemplate = (currentEmotion, isDisabled, isSaving) =>
   EMOJI.map(
     (emotion) => `
-
     <input
       class="film-details__emoji-item visually-hidden"
       name="comment-emoji"
@@ -63,9 +52,7 @@ const createNewCommentTemplate = (currentEmotion, isDisabled, isSaving) =>
     <label
       class="film-details__emoji-label"
       for="emoji-${he.encode(emotion)}">
-        <img src="./images/emoji/${he.encode(
-    emotion
-  )}.png" width="30" height="30" alt="emoji">
+        <img src="./images/emoji/${he.encode(emotion)}.png" width="30" height="30" alt="emoji">
     </label>
   `
   ).join('');
@@ -124,10 +111,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
           </div>
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
-              <img class="film-details__poster-img" src="${he.encode(
-    poster
-  )}" alt="">
-
+              <img class="film-details__poster-img" src="${he.encode(poster)}" alt="">
               <p class="film-details__age">${ageRating}+</p>
             </div>
 
@@ -135,9 +119,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
               <div class="film-details__info-head">
                 <div class="film-details__title-wrap">
                   <h3 class="film-details__title">${he.encode(title)}</h3>
-                  <p class="film-details__title-original">Original: ${he.encode(
-    alternativeTitle
-  )}</p>
+                  <p class="film-details__title-original">Original: ${he.encode(alternativeTitle)}</p>
                 </div>
 
                 <div class="film-details__rating">
@@ -152,48 +134,34 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Writers</td>
-                  <td class="film-details__cell">${he.encode(
-    writers.join(', ')
-  )}</td>
+                  <td class="film-details__cell">${he.encode(writers.join(', '))}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Actors</td>
-                  <td class="film-details__cell">${he.encode(
-    actors.join(', ')
-  )}</td>
+                  <td class="film-details__cell">${he.encode(actors.join(', '))}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">${he.encode(
-    humanizeReleaseDate(date)
-  )}</td>
+                  <td class="film-details__cell">${he.encode(humanizeReleaseDate(date))}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Duration</td>
-                  <td class="film-details__cell">${he.encode(
-    getTimeFromMins(duration)
-  )}</td>
+                  <td class="film-details__cell">${he.encode(getTimeFromMins(duration))}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
-                  <td class="film-details__cell">${he.encode(
-    releaseCountry
-  )}</td>
+                  <td class="film-details__cell">${he.encode(releaseCountry)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">
                     ${genre.length === 1 ? 'Genre' : 'Genres'}</td>
                   <td class="film-details__cell">
-                    <span class="film-details__genre">${he.encode(
-    genre.join(', ')
-  )}</span>
+                    <span class="film-details__genre">${he.encode(genre.join(', '))}</span>
                 </td>
                 </tr>
               </table>
 
-              <p class="film-details__film-description">${he.encode(
-    description
-  )}</p>
+              <p class="film-details__film-description">${he.encode(description)}</p>
             </div>
           </div>
 
@@ -233,24 +201,15 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
         <div class="film-details__bottom-container">
           <section class="film-details__comments-wrap">
             <h3 class="film-details__comments-title">Comments
-              <span class="film-details__comments-count">${
-  filmComments.length
-}</span>
+              <span class="film-details__comments-count">${filmComments.length}</span>
             </h3>
             <ul class="film-details__comments-list">
               ${commentTemplate}
             </ul>
-            <form class="film-details__new-comment" action="" method="get" ${
-  isDisabled ? 'disabled' : ''
-}>
+            <form class="film-details__new-comment" action="" method="get" ${isDisabled ? 'disabled' : ''}>
               <div class="film-details__add-emoji-label">
-               ${
-  emotion
-    ? `<img src="./images/emoji/${he.encode(
-      emotion
-    )}.png" width="55" height="55" alt="emoji">`
-    : ''
-}
+               ${emotion ?
+    `<img src="./images/emoji/${he.encode(emotion)}.png" width="55" height="55" alt="emoji">` : ''}
               </div>
 
               <label class="film-details__comment-label">
@@ -343,6 +302,7 @@ export default class FilmPopupView extends AbstractStatefulView {
     }
 
     let updatedDetails = this.#film.userDetails;
+    let activeFilter;
 
     switch (evt.target.dataset.control) {
       case FilterType.WATCHLIST: {
@@ -350,6 +310,7 @@ export default class FilmPopupView extends AbstractStatefulView {
           ...updatedDetails,
           watchlist: !this.#film.userDetails.watchlist,
         };
+        activeFilter = FilterType.WATCHLIST;
         break;
       }
       case FilterType.HISTORY: {
@@ -357,6 +318,7 @@ export default class FilmPopupView extends AbstractStatefulView {
           ...updatedDetails,
           alreadyWatched: !this.#film.userDetails.alreadyWatched,
         };
+        activeFilter = FilterType.HISTORY;
         break;
       }
       case FilterType.FAVORITE: {
@@ -364,6 +326,7 @@ export default class FilmPopupView extends AbstractStatefulView {
           ...updatedDetails,
           favorite: !this.#film.userDetails.favorite,
         };
+        activeFilter = FilterType.FAVORITE;
         break;
       }
       default:
@@ -372,7 +335,7 @@ export default class FilmPopupView extends AbstractStatefulView {
 
     this.#handleControlsClick(
       updatedDetails,
-      UpdateType.PATCH,
+      activeFilter,
       this.scrollPosition
     );
   };
